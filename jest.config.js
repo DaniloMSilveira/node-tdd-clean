@@ -1,4 +1,5 @@
 module.exports = {
+  setupFiles: ['dotenv/config'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/main/**',

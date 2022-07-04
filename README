@@ -1,0 +1,11 @@
+
+# Subindo postgres com docker local
+docker run --name pg_container -e POSTGRES_PASSWORD=docker -p 5432:5432 -d postgres:14.1-alpine
+
+docker exec -it pg_container bash
+psql -U postgres (inicia o psql)
+\dt (lista as tabelas)
+\q (sai do psql)
+
+# Criando tabela usuarios
+CREATE TABLE USUARIOS (id SERIAL PRIMARY KEY, email VARCHAR(100) NOT NULL, nome VARCHAR(200), id_facebook VARCHAR(200));

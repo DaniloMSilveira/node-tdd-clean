@@ -4,17 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/main",
+    "start": "node -r dotenv/config dist/main",
+    "dev": "ts-node-dev --respawn --transpile-only -r dotenv/config --inspect=0.0.0.0:9229 src/main",
     "clean": "rimraf dist",
     "build": "npm run clean && tsc -p tsconfig-build.json",
+    "prepare": "husky install",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest --passWithNoTests --no-cache --runInBand --silent",
     "test:watch": "npm t -- --watch",
     "test:staged": "npm t -- --findRelatedTests",
     "test:coverage": "npm t -- --coverage",
-    "test:integration": "npm t -- -c ./jest.integration.config.js",
-    "prepare": "husky install"
+    "test:integration": "npm t -- -c ./jest.integration.config.js"
   },
   "keywords": [],
   "author": "",

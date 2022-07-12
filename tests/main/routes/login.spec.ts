@@ -35,21 +35,21 @@ describe('Login Routes', () => {
         email: 'any_email'
       })
 
-      const response = await request(app)
+      const { status, body } = await request(app)
         .post('/api/login/facebook')
         .send({ token: 'valid_token' })
 
-      expect(response.status).toBe(200)
-      expect(response.body.accessToken).toBeDefined()
+      expect(status).toBe(200)
+      expect(body.accessToken).toBeDefined()
     })
 
     it('should return 401 with UnauthorizedError', async () => {
-      const response = await request(app)
+      const { status, body } = await request(app)
         .post('/api/login/facebook')
         .send({ token: 'invalid_token' })
 
-      expect(response.status).toBe(401)
-      expect(response.body).toEqual({ error: new UnauthorizedError().message })
+      expect(status).toBe(401)
+      expect(body).toEqual({ error: new UnauthorizedError().message })
     })
   })
 })

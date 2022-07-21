@@ -32,7 +32,7 @@ export const setupChangeProfilePicture: Setup = (
   if (file) {
     data.pictureUrl = await fileStorage.upload({ file, key })
   } else {
-    data.name = (await userProfileRepo.load({ id: userId })).name
+    data.name = (await userProfileRepo.load({ id: userId }))?.name
   }
 
   const userProfile = new UserProfile(userId)

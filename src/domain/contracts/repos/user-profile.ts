@@ -21,5 +21,5 @@ export namespace LoadUserProfile {
 
   export type Result = {
     name?: string
-  }
+  } | undefined
 }

@@ -10,7 +10,9 @@ jest.mock('@/domain/models/user-profile')
 
 describe('ChangeProfilePicture', () => {
   let hash: string
-  let file: Buffer
+  let file: { buffer: Buffer, mimeType: string }
+  let buffer: Buffer
+  let mimeType: string
   let fileStorage: MockProxy<UploadFile & DeleteFile>
   let hashGenerator: MockProxy<UUIDGenerator>
   let userProfileRepo: MockProxy<SaveUserPicture & LoadUserProfile>
@@ -18,7 +20,9 @@ describe('ChangeProfilePicture', () => {
 
   beforeAll(() => {
     hash = 'any_hash'
-    file = Buffer.from('any_buffer')
+    buffer = Buffer.from('any_buffer')
+    mimeType = 'image/png'
+    file = { buffer, mimeType }
     fileStorage = mock()
     fileStorage.upload.mockResolvedValue('any_url')
     hashGenerator = mock()
@@ -32,9 +36,16 @@ describe('ChangeProfilePicture', () => {
   })
 
   it('should call UploadFile with correct params', async () => {
-    await sut({ userId: 'any_user_id', file })
+    await sut({ userId: 'any_user_id', file: { buffer, mimeType: 'image/png' } })
 
-    expect(fileStorage.upload).toHaveBeenCalledWith({ file, key: hash })
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: buffer, key: `${hash}.png` })
+    expect(fileStorage.upload).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call UploadFile with correct params', async () => {
+    await sut({ userId: 'any_user_id', file: { buffer, mimeType: 'image/jpeg' } })
+
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: buffer, key: `${hash}.jpeg` })
     expect(fileStorage.upload).toHaveBeenCalledTimes(1)
   })
 
@@ -93,10 +104,22 @@ describe('ChangeProfilePicture', () => {
     userProfileRepo.savePicture.mockRejectedValueOnce(new Error())
     expect.assertions(2)
 
-    const promise = sut({ userId: 'any_user_id', file })
+    const promise = sut({ userId: 'any_user_id', file: { buffer, mimeType: 'image/png' } })
 
     promise.catch(() => {
-      expect(fileStorage.delete).toHaveBeenCalledWith({ key: hash })
+      expect(fileStorage.delete).toHaveBeenCalledWith({ key: `${hash}.png` })
+      expect(fileStorage.delete).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('should call DeleteFile when file exists and SaveUserPicture throws', async () => {
+    userProfileRepo.savePicture.mockRejectedValueOnce(new Error())
+    expect.assertions(2)
+
+    const promise = sut({ userId: 'any_user_id', file: { buffer, mimeType: 'image/jpeg' } })
+
+    promise.catch(() => {
+      expect(fileStorage.delete).toHaveBeenCalledWith({ key: `${hash}.jpeg` })
       expect(fileStorage.delete).toHaveBeenCalledTimes(1)
     })
   })

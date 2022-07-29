@@ -26,7 +26,7 @@ describe('SaveProfilePictureController', () => {
     expect(sut).toBeInstanceOf(Controller)
   })
 
-  it('should build Validators correctly', async () => {
+  it('should build Validators correctly on save', async () => {
     const validators = sut.buildValidators({ file, userId })
 
     expect(validators).toEqual([
@@ -37,11 +37,17 @@ describe('SaveProfilePictureController', () => {
     ])
   })
 
+  it('should build Validators correctly on delete', async () => {
+    const validators = sut.buildValidators({ file: undefined, userId })
+
+    expect(validators).toEqual([])
+  })
+
   it('should call ChangeProfilePicture with correct params', async () => {
     await sut.execute({ file, userId })
 
     expect(changeProfilePicture).toHaveBeenCalledTimes(1)
-    expect(changeProfilePicture).toHaveBeenCalledWith({ userId, file: buffer })
+    expect(changeProfilePicture).toHaveBeenCalledWith({ userId, file })
   })
 
   it('should return 200 with valid data', async () => {

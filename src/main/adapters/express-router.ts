@@ -5,8 +5,7 @@ import { Controller } from '@/application/controllers'
 type Adapter = (controller: Controller) => RequestHandler
 
 export const adaptExpressRoute: Adapter = controller => async (req, res) => {
-  const httpResponse = await controller.handle({ ...req.body })
-  const { statusCode, data } = httpResponse
-  const result = statusCode === 200 ? data : { error: data.message }
+  const { statusCode, data } = await controller.handle({ ...req.body, ...req.locals })
+  const result = statusCode.toString().substring(0, 1) === '2' ? data : { error: data.message }
   res.status(statusCode).json(result)
 }

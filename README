@@ -8,4 +8,4 @@ psql -U postgres (inicia o psql)
 \q (sai do psql)
 
 # Criando tabela usuarios
-CREATE TABLE USUARIOS (id SERIAL PRIMARY KEY, email VARCHAR(100) NOT NULL, nome VARCHAR(200), id_facebook VARCHAR(200));
+CREATE TABLE USUARIOS (id SERIAL PRIMARY KEY, email VARCHAR(100) NOT NULL, nome VARCHAR(200), id_facebook VARCHAR(60), foto VARCHAR(100), iniciais VARCHAR(2));

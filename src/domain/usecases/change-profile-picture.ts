@@ -5,7 +5,7 @@ import { UserProfile } from '@/domain/models'
 
 type Params = {
   userId: string
-  file?: Buffer
+  file?: { buffer: Buffer, mimeType: string }
 }
 
 type Result = {
@@ -26,11 +26,13 @@ export const setupChangeProfilePicture: Setup = (
   hashGenerator,
   userProfileRepo
 ) => async ({ userId, file }) => {
-  const key = hashGenerator.generate({ key: userId })
   const data: { pictureUrl?: string, name?: string } = {}
+  let key
 
   if (file) {
-    data.pictureUrl = await fileStorage.upload({ file, key })
+    const hash = hashGenerator.generate({ key: userId })
+    key = `${hash}.${file?.mimeType.split('/')[1]}`
+    data.pictureUrl = await fileStorage.upload({ file: file.buffer, key })
   } else {
     data.name = (await userProfileRepo.load({ id: userId }))?.name
   }
@@ -41,7 +43,7 @@ export const setupChangeProfilePicture: Setup = (
   try {
     await userProfileRepo.savePicture(userProfile)
   } catch (error) {
-    if (file) {
+    if (key) {
       await fileStorage.delete({ key })
     }
     throw error
